@@ -582,14 +582,21 @@
     });
  
     document.getElementById('chartCanvas').addEventListener('click', e => {
-        const rect = chart.canvas.getBoundingClientRect();
-        const scaleX = chart.canvas.width / rect.width;
-        const scaleY = chart.canvas.height / rect.height;
-        const canvasX = (e.clientX - rect.left) * scaleX;
-        const canvasY = (e.clientY - rect.top) * scaleY;
-        const x = chart.scales.x.getValueForPixel(canvasX);
-        const y = chart.scales.y.getValueForPixel(canvasY);
-        if (x < 0 || x > 100 || y < 0 || y > 100) return;
+        const canvas = chart.canvas;
+        const rect = canvas.getBoundingClientRect();
+        const area = chart.chartArea;
+ 
+        // Map click position to chart area (0-1)
+        const px = (e.clientX - rect.left) / rect.width * canvas.width;
+        const py = (e.clientY - rect.top)  / rect.height * canvas.height;
+ 
+        // Bail if outside the plot area
+        if (px < area.left || px > area.right || py < area.top || py > area.bottom) return;
+ 
+        // Map to data coordinates
+        const x = 100 * (px - area.left) / (area.right - area.left);
+        const y = 100 * (1 - (py - area.top) / (area.bottom - area.top));
+ 
         points.push({ x: +x.toFixed(2), y: +y.toFixed(2) });
         updateAll();
     });
