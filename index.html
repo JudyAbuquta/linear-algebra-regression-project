@@ -1,3 +1,6 @@
+Linear regression index · HTML
+Copy
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,9 +24,9 @@
             --mono: 'JetBrains Mono', monospace;
             --sans: 'DM Sans', sans-serif;
         }
-
+ 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+ 
         body {
             font-family: var(--sans);
             background: var(--bg);
@@ -31,7 +34,7 @@
             min-height: 100vh;
             overflow-x: hidden;
         }
-
+ 
         /* Grid paper background */
         body::before {
             content: '';
@@ -44,7 +47,7 @@
             pointer-events: none;
             z-index: 0;
         }
-
+ 
         .page {
             max-width: 1000px;
             margin: 0 auto;
@@ -52,7 +55,7 @@
             position: relative;
             z-index: 1;
         }
-
+ 
         /* Header */
         .header-meta {
             display: flex;
@@ -60,7 +63,7 @@
             gap: 12px;
             margin-bottom: 36px;
         }
-
+ 
         .badge {
             font-family: var(--mono);
             font-size: 0.6rem;
@@ -69,25 +72,25 @@
             border-radius: 4px;
             letter-spacing: 0.05em;
         }
-
+ 
         .badge-green {
             background: rgba(79,255,176,0.1);
             border: 1px solid rgba(79,255,176,0.25);
             color: var(--accent);
         }
-
+ 
         .badge-blue {
             background: rgba(0,212,255,0.08);
             border: 1px solid rgba(0,212,255,0.2);
             color: var(--accent2);
         }
-
+ 
         .badge-dim {
             background: var(--surface2);
             border: 1px solid var(--border);
             color: var(--muted);
         }
-
+ 
         h1 {
             font-family: var(--mono);
             font-size: clamp(1.3rem, 3vw, 1.9rem);
@@ -96,9 +99,9 @@
             margin-bottom: 8px;
             letter-spacing: -0.02em;
         }
-
+ 
         h1 .highlight { color: var(--accent); }
-
+ 
         .subtitle {
             font-size: 0.88rem;
             color: var(--muted);
@@ -107,7 +110,7 @@
             margin-bottom: 32px;
             font-weight: 300;
         }
-
+ 
         /* Formula display */
         .formula-block {
             background: var(--surface);
@@ -120,7 +123,7 @@
             align-items: center;
             gap: 16px;
         }
-
+ 
         .formula-label {
             font-family: var(--mono);
             font-size: 0.58rem;
@@ -128,28 +131,28 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
-
+ 
         .formula-eq {
             font-family: var(--mono);
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text);
         }
-
+ 
         .formula-eq .theta { color: var(--accent); }
         .formula-eq .ops { color: var(--accent2); }
-
+ 
         /* Layout */
         .main-grid {
             display: grid;
             grid-template-columns: 1fr 260px;
             gap: 16px;
         }
-
+ 
         @media (max-width: 700px) {
             .main-grid { grid-template-columns: 1fr; }
         }
-
+ 
         /* Chart panel */
         .panel {
             background: var(--surface);
@@ -157,7 +160,7 @@
             border-radius: 12px;
             overflow: hidden;
         }
-
+ 
         .panel-header {
             padding: 14px 20px;
             border-bottom: 1px solid var(--border);
@@ -165,7 +168,7 @@
             align-items: center;
             justify-content: space-between;
         }
-
+ 
         .panel-title {
             font-family: var(--mono);
             font-size: 0.65rem;
@@ -177,7 +180,7 @@
             align-items: center;
             gap: 8px;
         }
-
+ 
         .panel-title::before {
             content: '';
             width: 6px; height: 6px;
@@ -185,19 +188,19 @@
             background: var(--accent);
             animation: blink 2s infinite;
         }
-
+ 
         @keyframes blink {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.3; }
         }
-
+ 
         .panel-body { padding: 20px; }
-
+ 
         #chartCanvas {
             width: 100% !important;
             cursor: crosshair;
         }
-
+ 
         .chart-hint {
             font-family: var(--mono);
             font-size: 0.6rem;
@@ -206,10 +209,10 @@
             display: flex;
             gap: 20px;
         }
-
+ 
         .hint-item { display: flex; align-items: center; gap: 6px; }
         .hint-item::before { content: '›'; color: var(--accent); }
-
+ 
         /* Controls */
         .controls {
             padding: 14px 20px;
@@ -218,7 +221,7 @@
             gap: 10px;
             align-items: center;
         }
-
+ 
         .btn {
             font-family: var(--mono);
             font-size: 0.62rem;
@@ -231,7 +234,7 @@
             text-transform: uppercase;
             border: none;
         }
-
+ 
         .btn-primary {
             background: rgba(79,255,176,0.1);
             border: 1px solid rgba(79,255,176,0.3);
@@ -241,7 +244,7 @@
             background: rgba(79,255,176,0.18);
             border-color: var(--accent);
         }
-
+ 
         .btn-secondary {
             background: var(--surface2);
             border: 1px solid var(--border2);
@@ -251,7 +254,7 @@
             border-color: var(--muted);
             color: var(--text);
         }
-
+ 
         .counter {
             font-family: var(--mono);
             font-size: 0.6rem;
@@ -259,17 +262,17 @@
             margin-left: auto;
         }
         .counter strong { color: var(--accent); }
-
+ 
         /* Sidebar */
         .sidebar { display: flex; flex-direction: column; gap: 12px; }
-
+ 
         .metric-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 10px;
             overflow: hidden;
         }
-
+ 
         .metric-header {
             padding: 10px 14px;
             border-bottom: 1px solid var(--border);
@@ -279,9 +282,9 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
-
+ 
         .metric-body { padding: 14px; }
-
+ 
         .metric-value {
             font-family: var(--mono);
             font-size: 2rem;
@@ -290,14 +293,14 @@
             line-height: 1;
             font-variant-numeric: tabular-nums;
         }
-
+ 
         .metric-sub {
             font-size: 0.68rem;
             color: var(--muted);
             margin-top: 6px;
             font-weight: 300;
         }
-
+ 
         .r2-bar-wrap {
             margin-top: 10px;
             background: var(--border2);
@@ -311,7 +314,7 @@
             transition: width 0.3s ease;
             width: 0%;
         }
-
+ 
         .eq-display {
             font-family: var(--mono);
             font-size: 0.85rem;
@@ -319,11 +322,11 @@
             color: var(--text);
             line-height: 1.6;
         }
-
+ 
         .eq-display .t0 { color: var(--accent2); }
         .eq-display .t1 { color: var(--accent); }
         .eq-empty { font-size: 0.72rem; color: var(--muted2); font-style: italic; }
-
+ 
         .param-row {
             display: flex;
             justify-content: space-between;
@@ -334,7 +337,7 @@
         .param-row:last-child { border-bottom: none; padding-bottom: 0; }
         .param-name { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
         .param-val { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; color: var(--text); }
-
+ 
         /* Steps */
         .step-item {
             display: flex;
@@ -365,7 +368,7 @@
             padding: 1px 5px;
             border-radius: 3px;
         }
-
+ 
         .footer-note {
             margin-top: 32px;
             text-align: center;
@@ -378,25 +381,25 @@
 </head>
 <body>
 <div class="page">
-
+ 
     <div class="header-meta">
         <span class="badge badge-green">Interactive</span>
         <span class="badge badge-blue">No ML Libraries</span>
         <span class="badge badge-dim">Vanilla JS</span>
     </div>
-
+ 
     <h1>Linear Regression via<br><span class="highlight">Normal Equation</span></h1>
     <p class="subtitle">Click anywhere on the chart to plot data points. The regression line recomputes instantly using pure matrix math — no gradient descent, no iterations, just a single closed-form solve.</p>
-
+ 
     <div class="formula-block">
         <div class="formula-label">Closed-Form Solution</div>
         <div class="formula-eq">
             <span class="theta">θ</span> = (<span class="ops">Xᵀ X</span>)⁻¹ <span class="ops">Xᵀ</span> y
         </div>
     </div>
-
+ 
     <div class="main-grid">
-
+ 
         <!-- Chart -->
         <div>
             <div class="panel">
@@ -417,10 +420,10 @@
                 </div>
             </div>
         </div>
-
+ 
         <!-- Sidebar -->
         <div class="sidebar">
-
+ 
             <div class="metric-card">
                 <div class="metric-header">R² Score</div>
                 <div class="metric-body">
@@ -429,7 +432,7 @@
                     <div class="metric-sub" id="r2Label">needs ≥ 2 points</div>
                 </div>
             </div>
-
+ 
             <div class="metric-card">
                 <div class="metric-header">Equation</div>
                 <div class="metric-body">
@@ -438,7 +441,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <div class="metric-card">
                 <div class="metric-header">Parameters (θ)</div>
                 <div class="metric-body">
@@ -452,7 +455,7 @@
                     </div>
                 </div>
             </div>
-
+ 
             <div class="metric-card">
                 <div class="metric-header">Computation Steps</div>
                 <div class="metric-body">
@@ -474,19 +477,19 @@
                     </div>
                 </div>
             </div>
-
+ 
         </div>
     </div>
-
+ 
     <div class="footer-note">Judy Abuquta · Linear Algebra Final Project · Effat University</div>
-
+ 
 </div>
-
+ 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
     let points = [];
     let chart;
-
+ 
     function transpose(M) {
         return M[0].map((_, i) => M.map(r => r[i]));
     }
@@ -512,7 +515,7 @@
         const ssR = ys.reduce((s,y,i) => s+(y-(t[0]+t[1]*xs[i]))**2, 0);
         return 1 - ssR/ssT;
     }
-
+ 
     const ctx = document.getElementById('chartCanvas').getContext('2d');
     chart = new Chart(ctx, {
         type: 'scatter',
@@ -577,27 +580,33 @@
                     title: { display: true, text: 'y', font: { family: 'JetBrains Mono', size: 11 }, color: '#3d4452' }
                 }
             },
-            onClick(event) {
-                const rect = chart.canvas.getBoundingClientRect();
-                const x = chart.scales.x.getValueForPixel(event.clientX - rect.left);
-                const y = chart.scales.y.getValueForPixel(event.clientY - rect.top);
-                if (x < 0 || x > 100 || y < 0 || y > 100) return;
-                points.push({ x: +x.toFixed(2), y: +y.toFixed(2) });
-                updateAll();
-            }
+            onClick() {}
         }
     });
-
+ 
+    document.getElementById('chartCanvas').addEventListener('click', e => {
+        const rect = chart.canvas.getBoundingClientRect();
+        const scaleX = chart.canvas.width / rect.width;
+        const scaleY = chart.canvas.height / rect.height;
+        const canvasX = (e.clientX - rect.left) * scaleX;
+        const canvasY = (e.clientY - rect.top) * scaleY;
+        const x = chart.scales.x.getValueForPixel(canvasX);
+        const y = chart.scales.y.getValueForPixel(canvasY);
+        if (x < 0 || x > 100 || y < 0 || y > 100) return;
+        points.push({ x: +x.toFixed(2), y: +y.toFixed(2) });
+        updateAll();
+    });
+ 
     document.getElementById('chartCanvas').addEventListener('contextmenu', e => {
         e.preventDefault();
         if (points.length > 0) { points.pop(); updateAll(); }
     });
-
+ 
     function updateAll() {
         chart.data.datasets[0].data = points.map(p => ({ x: p.x, y: p.y }));
         const n = points.length;
         document.getElementById('pointCount').textContent = n;
-
+ 
         if (n >= 2) {
             const xs = points.map(p => p.x);
             const ys = points.map(p => p.y);
@@ -630,9 +639,9 @@
         }
         chart.update();
     }
-
+ 
     function clearPoints() { points = []; updateAll(); }
-
+ 
     function loadDemo() {
         points = [
             {x:8,y:12},{x:14,y:20},{x:21,y:25},{x:29,y:36},
