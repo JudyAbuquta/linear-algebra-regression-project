@@ -170,7 +170,22 @@
         .sn { font-family: var(--mono); font-size: 0.6rem; color: var(--accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
         .st { font-size: 0.68rem; color: var(--muted); line-height: 1.5; font-weight: 300; }
         .st code { font-family: var(--mono); font-size: 0.65rem; color: var(--accent2); background: rgba(0,212,255,0.07); padding: 1px 4px; border-radius: 3px; }
-        .foot { margin-top: 28px; text-align: center; font-family: var(--mono); font-size: 0.55rem; color: #2a2e38; letter-spacing: 0.1em; }
+        .scenario-row { margin-bottom: 14px; }
+        .slabel { font-family: var(--mono); font-size: 0.55rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 8px; }
+        .scenario-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .stab {
+            font-family: var(--sans);
+            font-size: 0.72rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--muted);
+            transition: all 0.15s;
+        }
+        .stab:hover { color: var(--text); border-color: var(--muted); }
+        .stab.active { background: rgba(79,255,176,0.1); border-color: rgba(79,255,176,0.35); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -192,6 +207,14 @@
             <div class="panel">
                 <div class="phead">Scatter Plot · click to add points</div>
                 <div class="pbody">
+                    <div class="scenario-row">
+                        <span class="slabel">Scenario</span>
+                        <div class="scenario-tabs">
+                            <button class="stab active" onclick="setScenario('study')">📚 Study Hours vs Score</button>
+                            <button class="stab" onclick="setScenario('house')">🏠 House Size vs Price</button>
+                            <button class="stab" onclick="setScenario('temp')">🌡️ Temp vs Ice Cream Sales</button>
+                        </div>
+                    </div>
                     <canvas id="plot" height="400"></canvas>
                     <div class="hint">
                         <span>left click to add</span>
@@ -243,6 +266,55 @@
 </div>
 
 <script>
+const scenarios = {
+    study: {
+        xLabel: 'Study Hours (per week)',
+        yLabel: 'Exam Score (%)',
+        xMax: 40,
+        yMax: 100,
+        hint: 'More study hours → higher score?',
+        demo: [
+            {x:2,y:42},{x:4,y:50},{x:6,y:55},{x:8,y:61},
+            {x:10,y:65},{x:14,y:70},{x:18,y:76},{x:22,y:80},
+            {x:26,y:85},{x:30,y:88},{x:35,y:91},{x:38,y:94}
+        ]
+    },
+    house: {
+        xLabel: 'House Size (m²)',
+        yLabel: 'Price (SAR 000s)',
+        xMax: 300,
+        yMax: 1000,
+        hint: 'Bigger house → higher price?',
+        demo: [
+            {x:60,y:180},{x:80,y:240},{x:100,y:290},{x:120,y:350},
+            {x:140,y:400},{x:160,y:460},{x:180,y:520},{x:200,y:590},
+            {x:220,y:650},{x:250,y:720},{x:270,y:800},{x:290,y:880}
+        ]
+    },
+    temp: {
+        xLabel: 'Temperature (°C)',
+        yLabel: 'Ice Cream Sales (units)',
+        xMax: 45,
+        yMax: 500,
+        hint: 'Hotter day → more sales?',
+        demo: [
+            {x:10,y:60},{x:14,y:90},{x:18,y:130},{x:20,y:160},
+            {x:23,y:200},{x:26,y:240},{x:29,y:290},{x:32,y:330},
+            {x:35,y:370},{x:38,y:410},{x:40,y:450},{x:43,y:480}
+        ]
+    }
+};
+
+let currentScenario = scenarios.study;
+
+function setScenario(key) {
+    currentScenario = scenarios[key];
+    points = [];
+    document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    update();
+}
+
 const canvas = document.getElementById('plot');
 const ctx = canvas.getContext('2d');
 let points = [];
@@ -263,17 +335,19 @@ function plotH() { return canvas.height - PAD.top - PAD.bottom; }
 
 // Data → pixel
 function toPixel(x, y) {
+    const s = currentScenario;
     return {
-        px: PAD.left + (x / 100) * plotW(),
-        py: PAD.top + (1 - y / 100) * plotH()
+        px: PAD.left + (x / s.xMax) * plotW(),
+        py: PAD.top + (1 - y / s.yMax) * plotH()
     };
 }
 
 // Pixel → data
 function toData(px, py) {
+    const s = currentScenario;
     return {
-        x: (px - PAD.left) / plotW() * 100,
-        y: (1 - (py - PAD.top) / plotH()) * 100
+        x: (px - PAD.left) / plotW() * s.xMax,
+        y: (1 - (py - PAD.top) / plotH()) * s.yMax
     };
 }
 
@@ -309,22 +383,58 @@ function draw() {
     ctx.font = '10px JetBrains Mono';
     ctx.textAlign = 'center';
     for (let i = 0; i <= 10; i++) {
-        const val = i * 10;
-        const x = PAD.left + (i / 10) * plotW();
-        const y = PAD.top + (1 - i / 10) * plotH();
-        ctx.fillText(val, x, PAD.top + plotH() + 18);
-        ctx.textAlign = 'right';
-        ctx.fillText(val, PAD.left - 8, y + 4);
-        ctx.textAlign = 'center';
+        const xVal = Math.round(i / 10 * currentScenario.xMax);
+        const yVal = Math.round(i / 10 * currentScenario.yMax);
+        const xPx = PAD.left + (i / 10) * plotW();
+        const yPx = PAD.top + (1 - i / 10) * plotH();
+        if (i % 2 === 0) {
+            ctx.textAlign = 'center';
+            ctx.fillText(xVal, xPx, PAD.top + plotH() + 18);
+            ctx.textAlign = 'right';
+            ctx.fillText(yVal, PAD.left - 6, yPx + 4);
+        }
     }
 
-    // Regression line
+    // Axis titles
+    ctx.fillStyle = '#5a6270';
+    ctx.font = '11px DM Sans';
+    ctx.textAlign = 'center';
+    ctx.fillText(currentScenario.xLabel, PAD.left + plotW()/2, canvas.height - 2);
+    ctx.save();
+    ctx.translate(10, PAD.top + plotH()/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText(currentScenario.yLabel, 0, 0);
+    ctx.restore();
+
+    // Empty state
+    if (points.length === 0) {
+        ctx.fillStyle = 'rgba(79,255,176,0.12)';
+        ctx.strokeStyle = 'rgba(79,255,176,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5,5]);
+        const cx = PAD.left + plotW()/2;
+        const cy = PAD.top + plotH()/2;
+        const r = 28;
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#4fffb0';
+        ctx.font = 'bold 22px JetBrains Mono';
+        ctx.textAlign = 'center';
+        ctx.fillText('+', cx, cy + 8);
+        ctx.fillStyle = '#5a6270';
+        ctx.font = '12px DM Sans';
+        ctx.fillText(currentScenario.hint, cx, cy + 46);
+        ctx.font = '11px JetBrains Mono';
+        ctx.fillStyle = '#3d4452';
+        ctx.fillText('the regression line will appear automatically', cx, cy + 64);
+        ctx.textAlign = 'center';
+    }
     if (points.length >= 2) {
         const theta = normalEquation(points.map(p=>p.x), points.map(p=>p.y));
         if (theta) {
             const [t0, t1] = theta;
             const p1 = toPixel(0, t0);
-            const p2 = toPixel(100, t0 + t1 * 100);
+            const p2 = toPixel(currentScenario.xMax, t0 + t1 * currentScenario.xMax);
             ctx.strokeStyle = '#00d4ff';
             ctx.lineWidth = 2;
             ctx.setLineDash([8, 4]);
@@ -422,11 +532,7 @@ function update() {
 
 function clearPts() { points = []; update(); }
 function loadDemo() {
-    points = [
-        {x:8,y:12},{x:14,y:20},{x:21,y:25},{x:29,y:36},
-        {x:37,y:39},{x:44,y:50},{x:51,y:56},{x:59,y:63},
-        {x:67,y:69},{x:74,y:78},{x:81,y:83},{x:89,y:90}
-    ];
+    points = currentScenario.demo.map(p => ({...p}));
     update();
 }
 
